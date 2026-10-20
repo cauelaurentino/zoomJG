@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom JG - Premiere Pro</title>
+    <style>
+        /* Reset & Base Settings */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1c1c1e;
+            color: #f5f5f7;
+            padding: 16px;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .card {
+            background-color: #2c2c2e;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .label {
+            display: block;
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select.modal-input {
+            background-color: #1c1c1e;
+            border: 1px solid #3a3a3c;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            text-align: center;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select.modal-input:focus {
+            border-color: #0a84ff;
+        }
+
+        select.modal-input {
+            width: 100%;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-secondary {
+            background-color: #3a3a3c;
+            color: #ffffff;
+            border: 1px solid transparent;
+        }
+
+        .btn-secondary:hover {
+            background-color: #48484a;
+        }
+
+        .btn-secondary:active {
+            background-color: #2c2c2e;
+        }
+
+        .btn-secondary.active {
+            background-color: #2c2c2e;
+            border: 1px solid #0a84ff;
+            color: #0a84ff;
+        }
+
+        .btn-primary {
+            background-color: #0a84ff;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 14px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0071e3;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #3a3a3c;
+            color: #86868b;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .btn-outline:hover {
+            border-color: #f5f5f7;
+            color: #f5f5f7;
+        }
+
+        /* SEÇÃO MEUS PRESETS */
+        .presets-section {
+            margin-top: 24px;
+        }
+
+        .presets-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #86868b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preset-item {
+            background: #2c2c2e;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .preset-item:hover {
+            background: #3a3a3c;
+        }
+
+        .preset-item:active {
+            transform: scale(0.98);
+        }
+
+        .preset-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .preset-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #f5f5f7;
+        }
+
+        .preset-value {
+            font-size: 12px;
+            color: #86868b;
+        }
+
+        .preset-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #86868b;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+        }
+
+        .icon-btn:hover {
+            background: #48484a;
+            color: #ffffff;
+        }
+
+        .icon-btn.delete:hover {
+            background: #ff453a;
+            color: #ffffff;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #2c2c2e;
+            padding: 20px;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .modal-input {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            font-weight: 600;
+        }
+
+        .btn-cancel {
+            background: #3a3a3c;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #48484a;
+        }
+
+        .btn-confirm {
+            background: #0a84ff;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #0071e3;
+        }
+
+        /* TOAST DE ERRO */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #ff3b30;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Zoom JG</h2>
+
+    <!-- Presets Rápidos -->
+    <div class="button-row">
+        <button class="btn-secondary active" id="presetIn">Zoom In</button>
+        <button class="btn-secondary" id="presetOut">Zoom Out</button>
+    </div>
+
+    <!-- Ajustes Finos -->
+    <div class="card">
+        <div class="input-group">
+            <label class="label">Escala Final (%)</label>
+            <input type="number" id="scaleValue" value="150" min="10" max="1000">
+        </div>
+    </div>
+
+    <!-- Botões de Ação Principais -->
+    <button class="btn-primary" id="btnApply">Aplicar</button>
+    <button class="btn-outline" id="btnOpenSaveModal">Salvar Zoom como Preset</button>
+    <button class="btn-outline" id="btnOpenIntercaladoModal" style="margin-top: 8px;">Criar preset geral</button>
+
+    <!-- Lista de Presets Salvos -->
+    <div class="presets-section">
+        <div class="presets-title">Meus Presets</div>
+        <div id="presetsList"></div>
+    </div>
+
+    <!-- Modais -->
+    <div class="modal-overlay" id="presetModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Novo Preset</div>
+            <input type="hidden" id="editPresetId" value="">
+            <input type="text" id="presetNameInput" class="modal-input" placeholder="Ex: Zoom Rápido Reels">
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" id="btnCancelModal">Cancelar</button>
+                <button class="modal-btn btn-confirm" id="btnConfirmModal">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="intercaladoModal">
+        <div class="modal-content">
+            <div class="modal-title">Preset Geral</div>
+            <label class="label" style="text-align: left;">Escala final Zoom In (%)</label>
+            <input type="number" id="interIn" class="modal-input" value="150">
+            <label class="label" style="text-align: left;">Escala final Zoom Out (%)</label>
+            <input type="number" id="interOut" class="modal-input" value="80">
+            <label class="label" style="text-align: left;">Tipo que deseja iniciar:</label>
+            <select id="interStartType" class="modal-input">
+                <option value="in">Zoom In</option>
+                <option value="out">Zoom Out</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" id="btnCancelInter">Cancelar</button>
+                <button class="modal-btn btn-confirm" id="btnApplyInter">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Selecione um vídeo!</div>
+
+    <script src="./js/CSInterface.js"></script>
+    <script>
+        // --- FUNÇÃO DE AVISO (TOAST) ---
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        // --- LÓGICA PRINCIPAL ---
+        const btnPresetIn = document.getElementById('presetIn');
+        const btnPresetOut = document.getElementById('presetOut');
+        const inputScale = document.getElementById('scaleValue');
+        const btnApply = document.getElementById('btnApply');
+
+        function updateActiveState(activeButton) {
+            btnPresetIn.classList.remove('active');
+            btnPresetOut.classList.remove('active');
+            if (activeButton) activeButton.classList.add('active');
+        }
+
+        btnPresetIn.addEventListener('click', () => { inputScale.value = 150; updateActiveState(btnPresetIn); });
+        btnPresetOut.addEventListener('click', () => { inputScale.value = 80; updateActiveState(btnPresetOut); });
+
+        let typingTimer;
+        inputScale.addEventListener('keyup', () => {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                const valor = parseInt(inputScale.value);
+                if (!isNaN(valor)) {
+                    if (valor > 100) updateActiveState(btnPresetIn);
+                    else if (valor <= 100) updateActiveState(btnPresetOut);
+                }
+            }, 400);
+        });
+
+        inputScale.addEventListener('change', () => {
+            const valor = parseInt(inputScale.value);
+            if (!isNaN(valor)) {
+                if (valor > 100) updateActiveState(btnPresetIn);
+                else if (valor <= 100) updateActiveState(btnPresetOut);
+            }
+        });
+
+        btnApply.addEventListener('click', () => {
+            const scale = inputScale.value;
+            const originalText = btnApply.innerText;
+            btnApply.innerText = "Aplicando...";
+            try {
+                var csInterface = new CSInterface();
+                csInterface.evalScript('aplicarZoomDinamico(' + scale + ')', function (resposta) {
+                    if (resposta && resposta.indexOf("Erro") !== -1) {
+                        showToast(resposta.replace("Erro: ", ""));
+                        btnApply.innerText = originalText;
+                    } else {
+                        btnApply.style.backgroundColor = "#32d74b";
+                        btnApply.innerText = "Aplicado!";
+                        setTimeout(() => { btnApply.innerText = originalText; btnApply.style.backgroundColor = "#0a84ff"; }, 1500);
+                    }
+                });
+            } catch (e) {
+                showToast("Selecione um vídeo na timeline.");
+                btnApply.innerText = originalText;
+            }
+        });
+
+        // --- MODAL GERAL (INTERCALADO) ---
+        const intercaladoModal = document.getElementById('intercaladoModal');
+        document.getElementById('btnOpenIntercaladoModal').addEventListener('click', () => intercaladoModal.style.display = 'flex');
+        document.getElementById('btnCancelInter').addEventListener('click', () => intercaladoModal.style.display = 'none');
+        document.getElementById('btnApplyInter').addEventListener('click', () => {
+            const valIn = document.getElementById('interIn').value;
+            const valOut = document.getElementById('interOut').value;
+            const startType = document.getElementById('interStartType').value;
+            intercaladoModal.style.display = 'none';
+            const originalText = btnApply.innerText;
+            btnApply.innerText = "Aplicando Geral...";
+            try {
+                var csInterface = new CSInterface();
+                csInterface.evalScript('aplicarZoomIntercalado(' + valIn + ', ' + valOut + ', "' + startType + '")', function (resposta) {
+                    if (resposta && resposta.indexOf("Erro") !== -1) {
+                        showToast(resposta.replace("Erro: ", ""));
+                        btnApply.innerText = originalText;
+                    } else {
+                        btnApply.style.backgroundColor = "#32d74b";
+                        btnApply.innerText = "Geral Aplicado!";
+                        setTimeout(() => { btnApply.innerText = originalText; btnApply.style.backgroundColor = "#0a84ff"; }, 1500);
+                    }
+                });
+            } catch (e) {
+                showToast("Selecione um vídeo na timeline.");
+                btnApply.innerText = originalText;
+            }
+        });
+
+        // --- PRESETS CRUD ---
+        const presetModal = document.getElementById('presetModal');
+        const presetNameInput = document.getElementById('presetNameInput');
+        const presetsList = document.getElementById('presetsList');
+        const modalTitle = document.getElementById('modalTitle');
+        const editPresetId = document.getElementById('editPresetId');
+        let presets = JSON.parse(localStorage.getItem('zoomjg_presets')) || [];
+
+        function renderPresets() {
+            presetsList.innerHTML = '';
+            if (presets.length === 0) {
+                presetsList.innerHTML = '<div style="color:#86868b; font-size:12px; text-align:center; padding:10px;">Nenhum preset salvo ainda.</div>';
+                return;
+            }
+            presets.forEach(preset => {
+                const item = document.createElement('div');
+                item.className = 'preset-item';
+                const info = document.createElement('div');
+                info.className = 'preset-info';
+                info.innerHTML = `<span class="preset-name">${preset.name}</span><span class="preset-value">Escala: ${preset.value}%</span>`;
+                item.addEventListener('click', () => {
+                    inputScale.value = preset.value;
+                    if (preset.value > 100) updateActiveState(btnPresetIn);
+                    else updateActiveState(btnPresetOut);
+                    btnApply.click();
+                });
+                const actions = document.createElement('div');
+                actions.className = 'preset-actions';
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'icon-btn';
+                btnEdit.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+                btnEdit.onclick = (e) => { e.stopPropagation(); openModal(preset.id); };
+                const btnDel = document.createElement('button');
+                btnDel.className = 'icon-btn delete';
+                btnDel.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+                btnDel.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Tem certeza que deseja apagar o preset "${preset.name}"?`)) {
+                        presets = presets.filter(p => p.id !== preset.id);
+                        savePresets();
+                    }
+                };
+                actions.appendChild(btnEdit);
+                actions.appendChild(btnDel);
+                item.appendChild(info);
+                item.appendChild(actions);
+                presetsList.appendChild(item);
+            });
+        }
+
+        function savePresets() { localStorage.setItem('zoomjg_presets', JSON.stringify(presets)); renderPresets(); }
+        function openModal(id = null) {
+            if (id) {
+                const p = presets.find(x => x.id === id);
+                modalTitle.innerText = "Editar Preset";
+                presetNameInput.value = p.name;
+                editPresetId.value = p.id;
+            } else {
+                modalTitle.innerText = "Salvar Novo Preset";
+                presetNameInput.value = "";
+                editPresetId.value = "";
+            }
+            presetModal.style.display = 'flex';
+            setTimeout(() => presetNameInput.focus(), 100);
+        }
+        function closeModal() { presetModal.style.display = 'none'; }
+        document.getElementById('btnOpenSaveModal').addEventListener('click', () => openModal());
+        document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+        document.getElementById('btnConfirmModal').addEventListener('click', () => {
+            const name = presetNameInput.value.trim();
+            if (!name) { alert("Digite um nome para o preset!"); return; }
+            const id = editPresetId.value;
+            const currentScale = inputScale.value;
+            if (id) {
+                const p = presets.find(x => x.id === id);
+                p.name = name;
+                p.value = currentScale;
+            } else { presets.push({ id: Date.now().toString(), name: name, value: currentScale }); }
+            savePresets(); closeModal();
+        });
+        renderPresets();
+
+        // --- AUTO-DETECTAR CLIPE SELECIONADO NA TIMELINE ---
+        let lastClipId = null;
+
+        setInterval(() => {
+            // Se o usuário estiver focado em algum input (digitando), não atualiza para não atrapalhar
+            if (document.activeElement === inputScale || document.activeElement === presetNameInput || document.activeElement === document.getElementById('interIn') || document.activeElement === document.getElementById('interOut')) {
+                return;
+            }
+
+            try {
+                var csInterface = new CSInterface();
+                csInterface.evalScript('obterEscalaDoClipeSelecionado()', function (resposta) {
+                    if (resposta && resposta !== "none" && !resposta.includes("Erro")) {
+                        const partes = resposta.split('|');
+                        if (partes.length === 3) {
+                            const clipId = partes[0];
+                            const tipo = partes[1]; // Recebe "IN" ou "OUT"
+                            const valorLido = parseInt(partes[2]);
+
+                            inputScale.value = valorLido;
+
+                            // Atualiza os botões visuais
+                            if (tipo === "IN") {
+                                updateActiveState(btnPresetIn);
+                            } else if (tipo === "OUT") {
+                                updateActiveState(btnPresetOut);
+                            } else {
+                                updateActiveState(null);
+                            }
+                        }
+                    } else if (resposta === "none") {
+                        // Reseta se não houver nada selecionado ou se não for vídeo
+                        lastClipId = null;
+                    }
+                });
+            } catch (e) {
+                // Erro de comunicação silenciado para não flodar o painel
+            }
+        }, 1000); // Roda em background a cada 1 segundo (1000ms) sem travar a interface
+    </script>
+</body>
+
+</html>
